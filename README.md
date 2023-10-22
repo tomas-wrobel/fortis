@@ -2,6 +2,8 @@
 
 ![npm package minimized gzipped size (select exports)](https://img.shields.io/bundlejs/size/fortis)
 
+See [docs](https:/fortis.tomaswrobel.dev)
+
 ## Web Components via JSX
 
 ### What is it?
