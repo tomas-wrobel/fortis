@@ -1,0 +1,15 @@
+{
+	"name": "fortis",
+	"version": "0.0.1",
+	"type": "module",
+	"license": "MIT",
+	"main": "dist/main.js",
+	"devDependencies": {
+		"typescript": "^5.0.2",
+		"vite": "^4.5.0"
+	},
+	"scripts": {
+		"build": "tsc",
+		"dev": "vite example"
+	}
+}
