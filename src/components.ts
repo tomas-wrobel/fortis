@@ -125,7 +125,6 @@ export function Component<P extends Record<string, Required | Optional<any> | ty
 				},
 			});
 			this.attachShadow({mode: 'open'});
-			this.rerender();
 		}
 
 		public rerender() {
@@ -146,6 +145,10 @@ export function Component<P extends Record<string, Required | Optional<any> | ty
 			if (oldValue !== newValue) {
 				this.rerender();
 			}
+		}
+
+		public connectedCallback() {
+			this.rerender();
 		}
 
 		props: {

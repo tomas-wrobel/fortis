@@ -6,9 +6,13 @@ declare namespace JSX {
         [K in keyof CSSStyleDeclaration as CSSStyleDeclaration[K] extends string ? Exclude<K, number> : never]?: string | number;
     };
 
-    type Events = {
-        [K in keyof HTMLElementEventMap as `on${K}`]: (this: HTMLElement, ev: HTMLElementEventMap[K]) => void;
+    type Events<T extends HTMLElement> = {
+        [K in keyof HTMLElementEventMap as `on${K}`]?: TargetedListener<HTMLElementEventMap[K], T>;
     };
+
+    interface TargetedListener<E extends Event, T extends HTMLElement> {
+        (this: T, ev: Omit<E, "currentTarget"> & Record<"currentTarget", T>): void;
+    }
 
     interface GlobalAttributes {
         "aria-autocomplete": Attribute<string>;
@@ -84,7 +88,7 @@ declare namespace JSX {
         translate: "yes" | "no";
     }
 
-    type ElementProps<T = {}> = Partial<GlobalAttributes & Events & T>;
+    type ElementProps<T = {}> = Partial<GlobalAttributes & T>;
 
     interface Attributes {
         accept: [Attribute<string>, ["form", "input"]];
@@ -187,7 +191,7 @@ declare namespace JSX {
     >;
 
     type IntrinsicElements = {
-        [K in keyof HTMLElementTagNameMap]: AttributeFor<K>;
+        [K in keyof HTMLElementTagNameMap]: AttributeFor<K> & Events<HTMLElementTagNameMap[K]>;
     };
 
     interface ElementChildrenAttribute {

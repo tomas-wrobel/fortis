@@ -1,50 +1,47 @@
-import {f, name, Component, Optional, FunctionComponent, useNumber} from "../src/main";
+import {f, name, Component, FunctionComponent} from "../src/main";
 
-@name("counter")
-class CounterComponent extends Component({count: Optional(0)}) {
+const Item: FunctionComponent<{name: string}> = ({name}) => {
+    const span = <span>{name}</span>;
+
+    return (
+        <li>
+            {span}
+            <input type="checkbox" value={name} onchange={() => span.classList.toggle("done")} />
+        </li>
+    )
+};
+
+@name("list")
+class List extends Component({}) {
     static css = `
-        div {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 10px;
-            font-size: 20px;
-            font-family: sans-serif;
-        }
-
-        button {
-            appearance: none;
-            background: blue;
-            color: white;
-            padding: 5px 15px;
-            border: none;
-            border-radius: 5px;
+        .done {
+            text-decoration: line-through;
         }
     `;
+
+    ul = document.createElement("ul");
 
     render() {
         return (
             <div>
-                <button onclick={() => this.props.count++}>+</button>
-                {this.props.count}
-                <button onclick={() => this.props.count--}>-</button>
+                {this.ul}
+                <form onsubmit={e => {
+                    e.preventDefault();
+                    const data = new FormData(e.currentTarget);
+                    const name = data.get("name") as string;
+
+                    if (name) {
+                        this.ul.append(<Item name={name} />);
+                    }
+
+                    e.currentTarget.reset();
+                }}>
+                    <input type="text" name="name" />
+                    <button type="submit">Add</button>
+                </form>
             </div>
-        );
+        )
     }
 }
 
-document.body.appendChild(<CounterComponent />);
-
-const Counter: FunctionComponent<{count: number}> = ({count}) => {
-    const node = useNumber(count);
-
-    return (
-        <div>
-            <button onclick={() => node.value++}>+</button>
-            {node}
-            <button onclick={() => node.value--}>-</button>
-        </div>
-    );
-};
-
-document.body.appendChild(<Counter count={0} />);
+document.body.append(<List />);
