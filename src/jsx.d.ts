@@ -78,7 +78,7 @@ declare namespace JSX {
         part: Attribute<string>;
         slot: Attribute<string>;
         spellcheck: Attribute<boolean>;
-        style: CSS;
+        style: string | CSS;
         tabindex: Attribute<number>;
         title: Attribute<string>;
         translate: "yes" | "no";
@@ -144,7 +144,7 @@ declare namespace JSX {
         min: [Attribute<number>, ["input", "meter"]];
         multiple: [BooleanAttribute, ["input", "select"]];
         muted: [BooleanAttribute, ["audio", "video"]];
-        name: [Attribute<string>, ["button", "form", "fieldset", "iframe", "input", "map", "meta", "object", "output", "param", "select", "textarea"]];
+        name: [Attribute<string>, ["button", "form", "fieldset", "iframe", "input", "map", "meta", "object", "output", "param", "select", "textarea", "slot"]];
         novalidate: [BooleanAttribute, ["form"]];
         open: [BooleanAttribute, ["details", "dialog"]];
         optimum: [Attribute<number>, ["meter"]];

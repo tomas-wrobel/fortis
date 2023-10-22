@@ -17,7 +17,7 @@ export const f: JSX.Factory = function (tag: JSX.Tag, props: Record<string, unkn
 	}
 	const element = document.createElement(tag);
 	for (const key in props) {
-		if (key === 'style') {
+		if (key === 'style' && typeof props[key] === "object") {
 			Object.assign(element.style, props[key]);
 		} else if (key.startsWith("on")) {
 			element.addEventListener(key.slice(2), props[key] as EventListener);
