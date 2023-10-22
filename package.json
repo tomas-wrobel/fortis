@@ -11,5 +11,9 @@
 	"scripts": {
 		"build": "tsc",
 		"dev": "vite example"
-	}
+	},
+	"files": [
+		"dist",
+		"src"
+	]
 }
