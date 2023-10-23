@@ -56,6 +56,21 @@ export function Component<P extends Record<string, Required | Optional<any> | ty
 	};
 
 	type Props = JSX.ElementProps<OptionalProps & ListenerProps> & RequiredProps;
+	type PropGetters = {
+		[K in Exclude<keyof P, symbol> as P[K] extends typeof Listener ? `on${K}` : K]: P[K] extends Required
+		? P[K] extends Required.boolean
+		? boolean
+		: P[K] extends Required.number
+		? number
+		: string
+		: P[K] extends Optional<infer T>
+		? T
+		: P[K] extends typeof Listener
+		? (detail?: any) => void
+		: never;
+	} & {
+		children: HTMLSlotElement;
+	};
 
 	abstract class Component extends HTMLElement implements JSX.Component {
 		public static observedAttributes = Object.keys(init).filter(key => init[key] !== Listener);
@@ -64,66 +79,66 @@ export function Component<P extends Record<string, Required | Optional<any> | ty
 
 		public constructor(_props: JSX.WithChildren<Props>) {
 			super();
-			this.props = new Proxy<any>({}, { // Set-up proxy for props
-				get: (_target, key: string) => {
-					if (key === "children") {
-						return document.createElement("slot");
-					}
-					if (key.startsWith("on")) {
-						const event = key.slice(2);
-						return (detail?: any) => {
-							this.dispatchEvent(new CustomEvent(event, {detail}));
-						};
-					}
-					const value = init[key];
-					if (value === Listener) {
-						throw new TypeError("Cannot get value of listener.");
-					}
-					const attr = this.getAttribute(key as string);
-					if (value === Required.number) {
-						return Number(attr);
-					}
-					if (value === Required.boolean) {
-						return !!attr;
-					}
-					if (value === Required.string) {
-						return attr!;
-					}
-					if ("value" in value && value.optional) {
-						if (!attr) {
-							return value.value;
-						}
-						if (typeof value.value === 'number') {
-							return Number(attr);
-						}
-					}
+			for (const key in init) {
+				const value = init[key];
 
-					return attr;
-				},
-				has: (_target, key: string) => {
-					if (key === "children") {
-						return true;
-					}
-                    if (key.startsWith("on")) {
-						return key.slice(2) in init;
-					}
-					return this.hasAttribute(key as string);
-				},
-				set: (_target, key: string, value: any) => {
-					if (key === "children") {
-						throw new TypeError("Cannot set children.");
-					}
-					if (key.startsWith("on")) {
-						throw new TypeError("Cannot set event listener.");
-					}
-					if (typeof value === "boolean") {
-						this.toggleAttribute(key, value);
-					} else {
-						this.setAttribute(key, String(value));
-					}
-					return true;
-				},
-			});
+				if (value === Listener) {
+					Object.defineProperty(this.props, `on${key}`, {
+						get: () => {
+							return (detail?: any) => {
+								this.dispatchEvent(new CustomEvent(key, {detail}));
+							};
+						},
+					});
+				} else if (value === Required.boolean) {
+					Object.defineProperty(this.props, key, {
+						get: () => {
+							return this.hasAttribute(key);
+						},
+						set: (value: boolean) => {
+							this.toggleAttribute(key, value);
+						},
+					});
+				} else if (value === Required.string) {
+					Object.defineProperty(this.props, key, {
+						get: () => {
+							return this.getAttribute(key);
+						},
+						set: (value: string) => {
+							this.setAttribute(key, value);
+						},
+					});
+				} else if (value === Required.number) {
+					Object.defineProperty(this.props, key, {
+						get: () => {
+							return Number(this.getAttribute(key));
+						},
+						set: (value: number) => {
+							this.setAttribute(key, String(value));
+						},
+					});
+				} else if (typeof value === "object" && value.optional) {
+					Object.defineProperty(this.props, key, {
+						get: () => {
+							const attr = this.getAttribute(key);
+							if (attr === null) {
+								return value.value;
+							}
+							if (typeof value.value === 'number') {
+								return Number(attr);
+							}
+							return attr;
+						},
+						set: (value: string | number) => {
+							if (typeof value === "number") {
+								this.setAttribute(key, String(value));
+							} else {
+								this.setAttribute(key, value);
+							}
+						},
+					});
+				}
+			}
 			this.attachShadow({mode: 'open'});
 		}
 
@@ -151,20 +166,10 @@ export function Component<P extends Record<string, Required | Optional<any> | ty
 			this.rerender();
 		}
 
-		props: {
-			[K in Exclude<keyof P, symbol> as P[K] extends typeof Listener ? `on${K}` : K]: P[K] extends Required
-			? P[K] extends Required.boolean
-			? boolean
-			: P[K] extends Required.number
-			? number
-			: string
-			: P[K] extends Optional<infer T>
-			? T
-			: P[K] extends typeof Listener
-			? (detail?: any) => void
-			: never;
-		} & {
-			children: HTMLSlotElement;
+		public readonly props = <PropGetters>{
+			get children() {
+				return document.createElement("slot");
+			}
 		};
 	}
 
