@@ -2,113 +2,61 @@
 
 ![npm package minimized gzipped size (select exports)](https://img.shields.io/bundlejs/size/fortis)
 
-See [docs](https:/fortis.tomaswrobel.dev)
+Fortis is another JSX library. It's a bit different from the others though:
 
-## Web Components via JSX
+* All JSX Elements are native DOM elements
+* Class components are [Web Components](https://developer.mozilla.org/en-US/docs/Web/Web_Components)
+* Function components do not create Shadow DOM, but can be used to create reusable components
 
-### What is it?
+## Why Fortis?
 
-Fortis is a library that allows you to write web components using JSX. It is a thin wrapper around the [Web Components API](https://developer.mozilla.org/en-US/docs/Web/Web_Components) that allows you to write components in a more declarative way.
+* **Native** - No Virtual DOM, no custom event system, no custom lifecycle methods, no custom anything. Fortis is just native DOM and native JavaScript.
+* **Fast** - Fortis is fast because it's native. It's also fast because it's small. The entire library is less than 1.5 kB gzipped.
+* **Simple** - Fortis is easy to learn. If you know JSX, you know Fortis.
+* **Well-Typed** - Fortis is written in TypeScript and comes with its own type definitions. This means that you get full type safety out of the box.
 
-### Why?
-
-The Web Components API is great, but it can be a bit verbose. This library allows you to write components in a more declarative way, using JSX.
-
-## Perfectly typed
-
-Fortis is written in TypeScript, and it is perfectly typed. It also provides a set of types that you can use to write your own components.
-
-## How to use it
-
-### Installation
+## Installation
 
 ```bash
 npm install fortis
 ```
 
-### Configuration
+## Usage
 
-You need to use `f` as the JSX factory. You can do this by adding the following line to your `tsconfig.json`:
+```tsx filename="demo.tsx"
+import {f, Component, Required} from 'fortis';
 
-```json
-{
-    "compilerOptions": {
-        "jsxFactory": "f"
-    }
-}
-```
-
-Similarly, you can configure Babel to use `f` as the JSX factory:
-
-```json
-{
-    "plugins": [
-        ["@babel/plugin-transform-react-jsx", {"pragma": "f"}]
-    ]
-}
-```
-
-Don't forget to import `f` in your components:
-
-```tsx
-import {f} from 'fortis';
-```
-
-Fragments and SVG elements are not supported.
-
-### Usage
-
-```tsx
-import {f, Component, FunctionComponent, Required} from 'fortis';
-
-// Function components do not create shadow roots
-const Price: FunctionComponent<{amount: number}> = ({amount}) => {
-    return <span>{amount} €</span>;
-};
-
-// Class components create shadow roots,
-// so you can use CSS encapsulation
-class Counter extends Component({count: Optional(0)}) {
+class WebComponent extends Component({
+    message: Required.string
+}) {
     static css = `
-        div {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 10px;
-            font-size: 20px;
-            font-family: sans-serif;
-        }
-
-        button {
-            appearance: none;
-            background: blue;
-            color: white;
-            padding: 5px 15px;
-            border: none;
-            border-radius: 5px;
+        :host {
+            display: block;
+            padding: 1rem;
+            border: 1px solid black;
         }
     `;
 
     render() {
         return (
-            <div>
-                <button onclick={() => this.props.count++}>+</button>
-                {this.props.count}
-                <button onclick={() => this.props.count--}>-</button>
+            <div title={this.props.message}>
+                {this.props.children}
             </div>
         );
     }
 }
 
-// JSX elements are native DOM elements
-document.body.append(
-    <div>
-        <Price amount={10} />
-        <Counter />
-    </div>
+const App = () => (
+    <WebComponent message="Hello World">
+        <h1>Hello World</h1>
+    </WebComponent>
 );
+
+document.body.appendChild(<App />);
 ```
 
-## License
+## Inspiration
 
-The project is licensed under the MIT license.
+Fortis is inspired by [Lit](https://lit.dev) and [Preact](https://preactjs.com/). It's also heavily influenced by [React](https://react.dev) and [JSX](https://facebook.github.io/jsx/).
+
+However, Fortis is not a clone of any of these libraries. It's a unique library with its own set of features and goals. Fortis is not meant to be a replacement for any of these libraries, but rather an alternative for those who want something different.

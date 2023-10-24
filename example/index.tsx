@@ -8,7 +8,7 @@ const Item: FunctionComponent<{name: string}> = ({name}) => {
             {span}
             <input type="checkbox" value={name} onchange={() => span.classList.toggle("done")} />
         </li>
-    )
+    );
 };
 
 @name("list")

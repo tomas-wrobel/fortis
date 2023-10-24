@@ -1,3 +1,10 @@
+function createElement(tag: string) {
+	if (tag.startsWith("svg:")) {
+		return document.createElementNS("http://www.w3.org/2000/svg", tag.slice(4)) as JSX.Element;
+	}
+	return document.createElement(tag) as JSX.Element;
+}
+
 /**
  * The JSX factory function.
  * @param tag 
@@ -15,7 +22,7 @@ export const f: JSX.Factory = function (tag: JSX.Tag, props: Record<string, unkn
 		}
 		return tag({...props, children});
 	}
-	const element = document.createElement(tag);
+	const element = createElement(tag);
 	for (const key in props) {
 		if (key === 'style' && typeof props[key] === "object") {
 			Object.assign(element.style, props[key]);

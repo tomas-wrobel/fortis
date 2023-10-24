@@ -55,7 +55,7 @@ export function Component<P extends Record<string, Required | Optional<any> | ty
 		[K in Exclude<keyof P, symbol> as P[K] extends typeof Listener ? `on${K}` : never]: (event: CustomEvent) => void;
 	};
 
-	type Props = JSX.ElementProps<OptionalProps & ListenerProps> & RequiredProps;
+	type Props = JSX.HTMLElementProps<OptionalProps & ListenerProps> & RequiredProps;
 	type PropGetters = {
 		[K in Exclude<keyof P, symbol> as P[K] extends typeof Listener ? `on${K}` : K]: P[K] extends Required
 		? P[K] extends Required.boolean
@@ -183,3 +183,5 @@ export function Component<P extends Record<string, Required | Optional<any> | ty
 export interface FunctionComponent<P = {}> {
 	(props: JSX.WithChildren<P>): JSX.Element;
 }
+
+export const Fragment = "fortis-fragment";
