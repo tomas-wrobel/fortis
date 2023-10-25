@@ -69,7 +69,7 @@ export function Component<P extends Record<string, Required | Optional<any> | ty
 		? (detail?: any) => void
 		: never;
 	} & {
-		children: HTMLSlotElement;
+		readonly children: HTMLSlotElement;
 	};
 
 	abstract class Component extends HTMLElement implements JSX.Component {

@@ -40,7 +40,7 @@ class List extends Component({}) {
                     <button type="submit">Add</button>
                 </form>
             </div>
-        )
+        );
     }
 }
 

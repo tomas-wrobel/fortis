@@ -1,8 +1,8 @@
-function createElement(tag: string) {
+function createElement(tag: string): JSX.Element {
 	if (tag.startsWith("svg:")) {
-		return document.createElementNS("http://www.w3.org/2000/svg", tag.slice(4)) as JSX.Element;
+		return document.createElementNS("http://www.w3.org/2000/svg", tag.slice(4));
 	}
-	return document.createElement(tag) as JSX.Element;
+	return document.createElement(tag);
 }
 
 /**

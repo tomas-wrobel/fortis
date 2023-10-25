@@ -491,12 +491,7 @@ declare namespace JSX {
         (tag: `fortis-${string}`, props: HTMLElementProps, ...children: FortisNode[]): Element;
     }
 
-    type TagName = keyof HTMLElementTagNameMap | keyof SVGElementTagNameMap | `fortis-${string}`; 
-
-    interface Element extends globalThis.Element, ElementCSSInlineStyle, HTMLOrSVGElement {
-        tagName: TagName | Uppercase<TagName>;
-        nodeName: TagName | Uppercase<TagName>;
-    }
+    interface Element extends globalThis.Element, ElementCSSInlineStyle, HTMLOrSVGElement {}
 
     type Tag =
         | string
