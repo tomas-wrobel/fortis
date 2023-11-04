@@ -72,10 +72,6 @@ export function Component<P extends Record<string, Required | Optional<any> | ty
 		readonly children: HTMLSlotElement;
 	};
 
-	type ExtractProps<T extends HTMLElement> = {
-		[K in Exclude<keyof T, keyof Node | "__props__" | "props"> as T[K] extends Function ? never : `$${Exclude<K, number | symbol>}`]?: T[K];
-	};
-
 	abstract class Component extends HTMLElement {
 		public static observedAttributes = Object.keys(init).filter(key => init[key] !== Listener);
 		public static elementName = name;
@@ -179,7 +175,7 @@ export function Component<P extends Record<string, Required | Optional<any> | ty
 
 	interface Component {
 		constructor: typeof Component;
-		__props__: ExtractProps<this> & JSX.WithChildren<Props>;
+		__props__: JSX.PropertiesFor<Omit<this, "__props__" | "props">> & JSX.WithChildren<Props>;
 	}
 
 	return Component;

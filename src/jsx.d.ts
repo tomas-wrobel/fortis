@@ -188,7 +188,24 @@ declare namespace JSX {
         wrap: Attribute<"hard" | "soft", ["textarea"]>;
     }
 
-    type HTMLAttributeFor<K> = WithChildren<
+    type IfEquals<X, Y, A = X, B = never> =
+        (<T>() => T extends X ? 1 : 2) extends
+        (<T>() => T extends Y ? 1 : 2) ? A : B;
+
+    type WritableKeys<T> = {
+        [P in keyof T]-?:
+        IfEquals<
+            {[Q in P]: T[P]},
+            {-readonly [Q in P]: T[P]},
+            P
+        >
+    }[keyof T];
+
+    type PropertiesFor<T extends Element> = {
+        [L in WritableKeys<T> as T[L] extends Function ? never : `$${Exclude<L, symbol>}`]?: T[L];
+    };
+
+    type HTMLAttributeFor<K extends keyof HTMLElementTagNameMap> = PropertiesFor<HTMLElementTagNameMap[K]> & WithChildren<
         HTMLElementProps<{
             [A in keyof HTMLAttributes as K extends HTMLAttributes[A][1] ? A : never]: HTMLAttributes[A][0];
         }>
@@ -451,7 +468,7 @@ declare namespace JSX {
 
     type SVGElementProps<T = {}> = Partial<PresentationAttributes & T>;
 
-    type SVGAttributeFor<K> = WithChildren<
+    type SVGAttributeFor<K extends keyof SVGElementTagNameMap> = PropertiesFor<SVGElementTagNameMap[K]> & WithChildren<
         SVGElementProps<{
             [A in keyof SVGAttributes as K extends SVGAttributes[A][1] ? A : never]: SVGAttributes[A][0];
         }>
