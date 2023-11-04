@@ -26,6 +26,9 @@ export const f: JSX.Factory = function (tag: JSX.Tag, props: Record<string, unkn
 	for (const key in props) {
 		if (key === 'style' && typeof props[key] === "object") {
 			Object.assign(element.style, props[key]);
+		} else if (key[0] === "$") {
+			// @ts-expect-error This is fine.
+			element[key.slice(1)] = props[key];
 		} else if (key.startsWith("on")) {
 			element.addEventListener(key.slice(2), props[key] as EventListener);
 		} else if (typeof props[key] === "boolean") {

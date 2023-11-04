@@ -469,17 +469,20 @@ declare namespace JSX {
         children: {};
     }
 
-    type WithChildren<T> = T & {
+    type WithChildren<T> = {
         children?: FortisNode;
-    };
+    } & T;
 
-    interface Component extends HTMLElement {
-        render(): Node | string;
-        rerender(): void;
+    interface Component<P = {}> extends HTMLElement {
+        __props__: P;
+    }
+
+    interface ElementAttributesProperty {
+        __props__: {};
     }
 
     interface ComponentClass<P> {
-        new(props: P): Component;
+        new(): Component<P>;
         elementName: `fortis-${string}`;
     }
 
